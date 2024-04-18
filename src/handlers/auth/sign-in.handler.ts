@@ -9,7 +9,6 @@ const SignInHandler: Handler = async (req, res, next) => {
 	try {
 		const data = await authController.signIn(req.body as Request.SignIn)
 		const [user, token] = jwtController.generate(data)
-
 		res.locals = {
 			payload: {
 				user,

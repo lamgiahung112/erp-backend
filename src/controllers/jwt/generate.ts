@@ -11,7 +11,7 @@ export default function generate(data: Employees) {
 
 	return [
 		mappedData,
-		jwt.sign(JSON.stringify(mappedData), process.env.JWT_SECRET, {
+		jwt.sign(mappedData, process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRES,
 		}),
 	] as const
