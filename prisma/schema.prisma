@@ -1,0 +1,153 @@
+datasource db {
+    provider = "postgresql"
+    url = env("DB_URL")
+}
+
+enum ProjectMemberRole {
+    Member
+    Manager
+}
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  MAINTENANCE
+  INACTIVE
+}
+
+enum StageStatus {
+  IN_PROGRESS
+  COMPLETE
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+}
+
+model Admins {
+    id String @id @default(uuid())
+    username String @unique
+    password String
+
+    createdProjects Projects[]
+}
+
+model Employees {
+    id String @id @default(uuid())
+    isActive Boolean @default(true)
+    birthday DateTime
+    username String @unique
+    email String @unique
+    password String
+    CCCD String @unique
+    title String @default("Employee")
+    fullName String
+
+    projects ProjectMembers[]
+}
+
+model Projects {
+    id String @id @default(uuid())
+    name String 
+    status ProjectStatus @default(DRAFT)
+    createdAt DateTime @default(now())
+    creatorId String
+
+    creator Admins @relation(fields: [creatorId], references: [id])
+    members ProjectMembers[]
+    stages Stages[]
+}
+
+model ProjectMembers {
+    projectId String
+    employeeId String
+
+    project Projects @relation(fields: [projectId], references: [id])
+    employee Employees @relation(fields: [employeeId], references: [id])
+
+    @@id([projectId, employeeId])
+}
+
+model Stages {
+    id String @id @default(uuid())
+    status StageStatus @default(IN_PROGRESS)
+    projectId String
+
+    project Projects @relation(fields: [projectId], references: [id])
+    lists Lists[]
+    labels Labels[]
+}
+
+model Lists {
+    id String @id @default(uuid())
+    name String
+    stageId String
+
+    stage Stages @relation(fields: [stageId], references: [id])
+    listLabels ListLabel[]
+    tasks Tasks[]
+}
+
+model Labels {
+    id String @id @default(uuid())
+    stageId String
+    name String
+    hexColor String
+
+    stage Stages @relation(fields: [stageId], references: [id])
+    listLabels ListLabel[]
+}
+
+model ListLabel {
+    listId String
+    labelId String
+
+    list Lists @relation(fields: [listId], references: [id])
+    label Labels @relation(fields: [labelId], references: [id])
+
+    @@id([listId, labelId])
+}
+
+model Tasks {
+    id String @id @default(uuid())
+    listId String
+    title String
+    description String
+    assignedBy String
+    assignedTo String
+    completedAt DateTime
+    createdAt DateTime @default(now())
+    status TaskStatus @default(PENDING)
+
+    list Lists @relation(fields: [listId], references: [id])
+
+    attachments TaskAttachments[]
+    comments TaskComments[]
+}
+
+model TaskAttachments {
+    id String @id @default(uuid())
+    taskId String
+    url String
+    filename String
+    createdAt DateTime @default(now())
+
+    task Tasks @relation(fields: [taskId], references: [id])
+}
+
+model TaskComments {
+    id String @id @default(uuid())
+    taskId String
+    employeeId String
+    createdAt DateTime @default(now())
+    content String
+
+    task Tasks @relation(fields: [taskId], references: [id])
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+

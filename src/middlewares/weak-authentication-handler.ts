@@ -1,5 +1,5 @@
+import jwtController from "@src/controllers/jwt"
 import { Handler } from "express"
-import jwt from "jsonwebtoken"
 
 const WeakAuthenticationHandler: Handler = (req, res, next) => {
 	try {
@@ -10,10 +10,7 @@ const WeakAuthenticationHandler: Handler = (req, res, next) => {
 		}
 
 		const authToken = bearerToken.substring(7)
-		const userData = jwt.verify(
-			authToken,
-			process.env.JWT_SECRET as string
-		) as AuthenticatedUserInfo
+		const userData = jwtController.verify(authToken)
 
 		res.locals = {
 			authenticatedUser: userData,

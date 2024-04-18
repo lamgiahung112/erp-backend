@@ -1,7 +1,7 @@
 import { Handler } from "express"
 import HttpCode from "@src/utils/http-code"
 import ApiError from "@src/utils/api-error"
-import jwt from "jsonwebtoken"
+import jwtController from "@src/controllers/jwt"
 
 const AuthenticationHandler: Handler = (req, res, next) => {
 	try {
@@ -12,10 +12,7 @@ const AuthenticationHandler: Handler = (req, res, next) => {
 		}
 
 		const authToken = bearerToken.substring(7)
-		const userData = jwt.verify(
-			authToken,
-			process.env.JWT_SECRET as string
-		) as AuthenticatedUserInfo
+		const userData = jwtController.verify(authToken)
 
 		res.locals = {
 			authenticatedUser: userData,
