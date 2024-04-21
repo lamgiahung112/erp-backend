@@ -1,4 +1,4 @@
-import { Request } from "@requests"
+import { ApiRequest } from "@requests"
 import authController from "@src/controllers/auth"
 import ApiError from "@src/utils/api-error"
 import HttpCode from "@src/utils/http-code"
@@ -6,7 +6,7 @@ import { Handler } from "express"
 
 const SignUpHandler: Handler = async (req, res, next) => {
 	try {
-		const data = await authController.signUp(req.body as Request.SignUp)
+		const data = await authController.signUp(req.body as ApiRequest.SignUp)
 
 		res.locals = {
 			payload: data,

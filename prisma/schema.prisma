@@ -3,9 +3,15 @@ datasource db {
     url = env("DB_URL")
 }
 
-enum ProjectMemberRole {
+enum OrganizationMemberRole {
+    Owner
+    Admin
     Member
+}
+
+enum ProjectMemberRole {
     Manager
+    Member
 }
 
 enum ProjectStatus {
@@ -26,26 +32,40 @@ enum TaskStatus {
   COMPLETE
 }
 
-model Admins {
+model Organization {
     id String @id @default(uuid())
-    username String @unique
-    password String
+    name String
+    shouldRequireConsentBeforeAddingMember Boolean @default(false)
+    creatorId String
+    createdAt DateTime @default(now())
 
-    createdProjects Projects[]
+    creator Users @relation(fields: [creatorId], references: [id])
+    members OrganizationMember[]
 }
 
-model Employees {
+model OrganizationMember {
+    orgId String
+    userId String
+    role OrganizationMemberRole @default(Member)
+    
+    organization Organization @relation(fields: [orgId], references: [id])
+    member Users @relation(fields: [userId], references: [id])
+    @@id([orgId, userId])
+}
+
+model Users {
     id String @id @default(uuid())
     isActive Boolean @default(true)
-    birthday DateTime
+    birthday DateTime @default(now())
     username String @unique
     email String @unique
     password String
-    CCCD String @unique
-    title String @default("Employee")
     fullName String
 
-    projects ProjectMembers[]
+    projectsMember ProjectMembers[]
+    createdProjects Projects[]
+    organizationsMember OrganizationMember[]
+    createdOrganizations Organization[]
 }
 
 model Projects {
@@ -55,19 +75,20 @@ model Projects {
     createdAt DateTime @default(now())
     creatorId String
 
-    creator Admins @relation(fields: [creatorId], references: [id])
+    creator Users @relation(fields: [creatorId], references: [id])
     members ProjectMembers[]
     stages Stages[]
 }
 
 model ProjectMembers {
     projectId String
-    employeeId String
+    userId String
+    role ProjectMemberRole
 
     project Projects @relation(fields: [projectId], references: [id])
-    employee Employees @relation(fields: [employeeId], references: [id])
+    user Users @relation(fields: [userId], references: [id])
 
-    @@id([projectId, employeeId])
+    @@id([projectId, userId])
 }
 
 model Stages {
@@ -140,7 +161,7 @@ model TaskAttachments {
 model TaskComments {
     id String @id @default(uuid())
     taskId String
-    employeeId String
+    userId String
     createdAt DateTime @default(now())
     content String
 

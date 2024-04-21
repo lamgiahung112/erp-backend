@@ -3,7 +3,7 @@ import bcrypt from "bcrypt"
 import db from "@src/db"
 
 export default async function signIn(request: Request.SignIn) {
-	return db.employees
+	return db.users
 		.findFirst({
 			where: {
 				username: request.username,
@@ -13,6 +13,6 @@ export default async function signIn(request: Request.SignIn) {
 			if (user && bcrypt.compareSync(request.password, user.password)) {
 				return user
 			}
-			throw new Error()
+			throw new Error("Wrong username or password!")
 		})
 }

@@ -1,11 +1,11 @@
-import { Employees } from "@prisma/client"
+import { Users } from "@prisma/client"
 import jwt from "jsonwebtoken"
 
-export default function generate(data: Employees) {
+export default function generate(data: Users) {
 	const mappedData = {
 		id: data.id,
+		isActive: data.isActive,
 		fullName: data.fullName,
-		title: data.title,
 		username: data.username,
 	}
 

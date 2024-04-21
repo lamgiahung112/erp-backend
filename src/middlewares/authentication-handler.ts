@@ -1,7 +1,14 @@
 import { Handler } from "express"
 import HttpCode from "@src/utils/http-code"
 import ApiError from "@src/utils/api-error"
-import jwtController from "@src/controllers/jwt"
+import jwtController, { AuthenticatedUserData } from "@src/controllers/jwt"
+
+type AuthObject = {
+	authenticatedUser: AuthenticatedUserData
+	authToken: string
+}
+
+export type { AuthObject }
 
 const AuthenticationHandler: Handler = (req, res, next) => {
 	try {
@@ -16,6 +23,7 @@ const AuthenticationHandler: Handler = (req, res, next) => {
 
 		res.locals = {
 			authenticatedUser: userData,
+			authToken,
 		}
 		next()
 	} catch {

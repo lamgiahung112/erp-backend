@@ -14,6 +14,7 @@ const WeakAuthenticationHandler: Handler = (req, res, next) => {
 
 		res.locals = {
 			authenticatedUser: userData,
+			authToken,
 		}
 		next()
 	} catch {

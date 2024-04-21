@@ -1,12 +1,22 @@
-import type { Employees } from "@prisma/client"
+import type { OrganizationMemberRole, Users } from "@prisma/client"
 
-declare namespace Request {
-	declare type SignUp = Omit<Employees, "id" | "isActive"> & {
+declare namespace ApiRequest {
+	declare type SignUp = Omit<Users, "id" | "isActive"> & {
 		isActive: true
 	}
 
 	declare type SignIn = {
 		username: string
 		password: string
+	}
+
+	declare type CreateOrganization = {
+		name: string
+	}
+
+	declare type AddMemberToOrganization = {
+		organizationId: string
+		userId: string
+		role: OrganizationMemberRole
 	}
 }

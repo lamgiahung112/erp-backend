@@ -21,6 +21,7 @@
   "scripts": {
     "build": "npx tsc && tsc-alias",
     "start": "node dist/src/index.js",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "migrate": "prisma migrate dev"
   }
 }
