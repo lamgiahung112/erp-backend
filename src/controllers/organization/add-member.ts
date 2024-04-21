@@ -6,7 +6,7 @@ export default async function addUserToOrganization(options: {
 	userId: string
 	role: OrganizationMemberRole
 }) {
-	return db.organizationMember.create({
+	return db.organizationMembers.create({
 		data: options,
 	})
 }

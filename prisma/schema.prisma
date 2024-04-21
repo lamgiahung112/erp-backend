@@ -32,25 +32,39 @@ enum TaskStatus {
   COMPLETE
 }
 
-model Organization {
+model Organizations {
     id String @id @default(uuid())
     name String
-    shouldRequireConsentBeforeAddingMember Boolean @default(false)
+    shouldRequireApprovalBeforeAddingMember Boolean @default(false)
     creatorId String
     createdAt DateTime @default(now())
 
     creator Users @relation(fields: [creatorId], references: [id])
-    members OrganizationMember[]
+    members OrganizationMembers[]
+    invitations OrganizationMemberInvitations[]
 }
 
-model OrganizationMember {
+model OrganizationMembers {
     orgId String
     userId String
     role OrganizationMemberRole @default(Member)
     
-    organization Organization @relation(fields: [orgId], references: [id])
+    organization Organizations @relation(fields: [orgId], references: [id])
     member Users @relation(fields: [userId], references: [id])
     @@id([orgId, userId])
+}
+
+model OrganizationMemberInvitations {
+    orgId String
+    invitedUserId String
+    creatorId String
+    createdAt DateTime @default(now())
+
+    organization Organizations @relation(fields: [orgId], references: [id])
+    invitedUser Users @relation("invitedUser", fields: [invitedUserId], references: [id])
+    creator Users @relation("creator", fields: [creatorId], references: [id])
+
+    @@id([orgId, invitedUserId])
 }
 
 model Users {
@@ -64,8 +78,10 @@ model Users {
 
     projectsMember ProjectMembers[]
     createdProjects Projects[]
-    organizationsMember OrganizationMember[]
-    createdOrganizations Organization[]
+    organizationsMember OrganizationMembers[]
+    createdOrganizations Organizations[]
+    orgInvitationsReceived OrganizationMemberInvitations[] @relation("invitedUser")
+    orgInvitationsSent OrganizationMemberInvitations[] @relation("creator")
 }
 
 model Projects {

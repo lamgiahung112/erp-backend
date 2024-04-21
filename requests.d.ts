@@ -14,9 +14,25 @@ declare namespace ApiRequest {
 		name: string
 	}
 
+	declare type InviteToOrganization = {
+		invitedUserEmail: string
+		organizationId: string
+	}
+
+	declare type ChangeMemberRole = {
+		organizationId: string
+		memberEmail: string
+		role: OrganizationMemberRole
+	}
+
 	declare type AddMemberToOrganization = {
 		organizationId: string
 		userId: string
 		role: OrganizationMemberRole
+	}
+
+	declare type RespondToInvitation = {
+		organizationId: string
+		accepted: boolean
 	}
 }

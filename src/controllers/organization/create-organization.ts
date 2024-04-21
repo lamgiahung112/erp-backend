@@ -5,7 +5,7 @@ export default async function createOrganization(
 	orgName: string,
 	creator: AuthenticatedUserData
 ) {
-	return db.organization.create({
+	return db.organizations.create({
 		data: {
 			name: orgName,
 			creatorId: creator.id,
