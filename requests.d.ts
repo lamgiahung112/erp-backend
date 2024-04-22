@@ -1,6 +1,11 @@
 import type { OrganizationMemberRole, Users } from "@prisma/client"
 
 declare namespace ApiRequest {
+	declare type Pagination = {
+		page: number
+		pageSize: number
+	}
+
 	declare type SignUp = Omit<Users, "id" | "isActive"> & {
 		isActive: true
 	}
@@ -21,7 +26,7 @@ declare namespace ApiRequest {
 
 	declare type ChangeMemberRole = {
 		organizationId: string
-		memberEmail: string
+		memberUserId: string
 		role: OrganizationMemberRole
 	}
 
@@ -35,4 +40,13 @@ declare namespace ApiRequest {
 		organizationId: string
 		accepted: boolean
 	}
+
+	declare type RemoveOrgMember = {
+		organizationId: string
+		memberUserId: string
+	}
+
+	declare type GetMemberList = {
+		organizationId: string
+	} & Pagination
 }

@@ -9,17 +9,12 @@ import { Handler } from "express"
 const ChangeMemberRoleHandler: Handler = async (req, res, next) => {
 	try {
 		const authObject = res.locals as AuthObject
-		const { memberEmail, role, organizationId } =
+		const { memberUserId, role, organizationId } =
 			req.body as ApiRequest.ChangeMemberRole
-
-		const memberAsUser = await userController.findByEmail(memberEmail)
-		if (memberAsUser === null) {
-			throw new Error("This user doesn't exist!")
-		}
 
 		const member = await organizationController.findMember({
 			orgId: organizationId,
-			userId: memberAsUser.id,
+			userId: memberUserId,
 		})
 		if (member === null) {
 			throw new Error("This user is not in this organization")
@@ -38,7 +33,7 @@ const ChangeMemberRoleHandler: Handler = async (req, res, next) => {
 		await organizationController.changeMemberRole({
 			orgId: organizationId,
 			role,
-			userId: memberAsUser.id,
+			userId: memberUserId,
 		})
 
 		next()
