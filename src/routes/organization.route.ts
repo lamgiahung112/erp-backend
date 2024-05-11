@@ -1,22 +1,27 @@
-import {
-	ChangeMemberRoleHandler,
-	CreateInvitationHandler,
-	CreateOrganizationHandler,
-	GetMemberListHandler,
-	RemoveMemberHandler,
-	RespondToInvitationHandler,
-} from "@src/handlers/organization"
-import { AuthenticationHandler } from "@src/middlewares"
+import { Component, Autowired } from "@src/decorators/di"
+import AuthHandler from "@src/handlers/auth-handler"
 import express from "express"
-const organizationRouter = express.Router()
+import AppRoute from "./app.route"
+import OrganizationHandler from "@src/handlers/organization-handler"
 
-organizationRouter.use(AuthenticationHandler)
+@Component()
+class OrganizationRoute extends AppRoute {
+	private organizationRouter = express.Router()
 
-organizationRouter.post("/", CreateOrganizationHandler)
-organizationRouter.post("/invite", CreateInvitationHandler)
-organizationRouter.post("/invite/respond", RespondToInvitationHandler)
-organizationRouter.post("/members/role", ChangeMemberRoleHandler)
-organizationRouter.delete("/members", RemoveMemberHandler)
-organizationRouter.get("/members", GetMemberListHandler)
+	@Autowired()
+	private orgHandler!: OrganizationHandler
 
-export default organizationRouter
+	@Autowired()
+	private authHandler!: AuthHandler
+
+	override init() {
+		this.organizationRouter.post(
+			"/",
+			this.authHandler.VerifyUserToken,
+			this.orgHandler.CreateOrganization
+		)
+		return this.organizationRouter
+	}
+}
+
+export default OrganizationRoute
