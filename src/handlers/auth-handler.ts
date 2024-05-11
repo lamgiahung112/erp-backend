@@ -5,6 +5,7 @@ import { ApiRequest } from "@requests"
 import JwtController from "@src/controllers/jwt-controller"
 import ApiError from "@src/utils/api-error"
 import HttpCode from "@src/utils/http-code"
+import { AuthObject } from "@types"
 
 @Component()
 class AuthHandler {
@@ -18,14 +19,11 @@ class AuthHandler {
 
 	SignIn: Handler = async (req, res, next) => {
 		try {
-			const [user, err] = await this.authController.findUserAndCheckPassword(
+			const user = await this.authController.findUserAndCheckPassword(
 				req.body as ApiRequest.SignIn
 			)
-			if (err !== null) {
-				throw err
-			}
 
-			const [jwtData, token] = this.jwtController.generateTokenForUser(user!)
+			const [jwtData, token] = this.jwtController.generateTokenForUser(user)
 			res.locals = {
 				payload: {
 					user: jwtData,

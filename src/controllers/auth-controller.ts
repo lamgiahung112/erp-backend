@@ -12,21 +12,22 @@ class AuthController {
 	private userService!: UserService
 
 	async createUser(request: ApiRequest.SignUp) {
-		return this.userService.createUser(request)
+		const [createdUser, err] = await this.userService.createUser(request)
+
+		if (err) throw err
+		return createdUser
 	}
 
-	async findUserAndCheckPassword(
-		request: ApiRequest.SignIn
-	): Promise<[Users | null, ApiError | null]> {
-		return this.userService.findByUsername(request.username).then((user) => {
-			if (user && bcrypt.compareSync(request.password, user.password)) {
-				return [user, null] as const
-			}
-			return [
-				null,
-				new ApiError("Wrong username or password!", HttpCode.BAD_REQUEST),
-			]
-		})
+	async findUserAndCheckPassword(request: ApiRequest.SignIn): Promise<Users> {
+		const [user, err] = await this.userService.findByUsername(request.username)
+
+		if (err) throw err
+
+		if (user && bcrypt.compareSync(request.password, user.password)) {
+			return user
+		}
+
+		throw new ApiError("Wrong username or password", HttpCode.BAD_REQUEST)
 	}
 }
 

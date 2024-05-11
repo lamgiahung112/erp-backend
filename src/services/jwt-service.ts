@@ -1,5 +1,6 @@
 import { Users } from "@prisma/client"
 import { Component } from "@src/decorators/di"
+import { AuthenticatedUserData } from "@types"
 import jwt from "jsonwebtoken"
 
 @Component()
