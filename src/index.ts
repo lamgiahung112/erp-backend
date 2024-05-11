@@ -1,23 +1,54 @@
 import express from "express"
-import initRoute from "./routes"
 import { ResponseHandler, ErrorHandler } from "./middlewares"
 import dotenv from "dotenv"
 import cors from "cors"
+import { Autowired } from "./decorators/di"
+import RouteInitializer from "./routes/route-initializer"
 
-const app = express()
-const port = 3001
+class App {
+	private app = express()
+	private port = 3001
 
-dotenv.config()
+	@Autowired()
+	private routeInitializer!: RouteInitializer
 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+	init() {
+		this.configEnvironment()
+		this.configCors()
+		this.configEncoding()
+		this.configRoutes()
+		this.configResponseAndErrorHandler()
+		this.startServer()
+	}
 
-initRoute(app)
+	private configEnvironment() {
+		dotenv.config()
+	}
 
-app.use(ResponseHandler)
-app.use(ErrorHandler)
+	private configCors() {
+		this.app.use(cors())
+	}
 
-app.listen(port, () => {
-	console.log("LISTENING ON PORT 3001")
-})
+	private configEncoding() {
+		this.app.use(express.json())
+		this.app.use(express.urlencoded({ extended: true }))
+	}
+
+	private configRoutes() {
+		this.routeInitializer.initRoute(this.app)
+	}
+
+	private configResponseAndErrorHandler() {
+		this.app.use(ResponseHandler)
+		this.app.use(ErrorHandler)
+	}
+
+	private startServer() {
+		this.app.listen(this.port, () => {
+			console.log("LISTENING ON PORT 3001")
+		})
+	}
+}
+
+const app = new App()
+app.init()

@@ -1,10 +1,25 @@
-import { SignInHandler, SignUpHandler, VerifyHandler } from "@src/handlers/auth"
-import { AuthenticationHandler } from "@src/middlewares"
+import { Component, Autowired } from "@src/decorators/di"
+import AuthHandler from "@src/handlers/auth-handler"
 import express from "express"
-const authRouter = express.Router()
+import AppRoute from "./app.route"
 
-authRouter.post("/signup", SignUpHandler)
-authRouter.post("/signin", SignInHandler)
-authRouter.get("/verify", AuthenticationHandler, VerifyHandler)
+@Component()
+class AuthRoute extends AppRoute {
+	private authRouter = express.Router()
 
-export default authRouter
+	@Autowired()
+	private authHandler!: AuthHandler
+
+	override init() {
+		this.authRouter.post("/signup", this.authHandler.SignUp)
+		this.authRouter.post("/signin", this.authHandler.SignIn)
+		this.authRouter.get(
+			"/verify",
+			this.authHandler.VerifyUserToken,
+			this.authHandler.MapUserDataFromAuthObject
+		)
+		return this.authRouter
+	}
+}
+
+export default AuthRoute
